@@ -2,6 +2,8 @@ import { AfterViewInit, Component, ViewChild } from '@angular/core';
 import { MatPaginator } from '@angular/material/paginator';
 import { MatSort } from '@angular/material/sort';
 import { MatTableDataSource } from '@angular/material/table';
+import { ProductRespone } from '../../modules/product.model';
+import { ProductService } from '../../services/productService.service';
 export interface UserData {
   id: string;
   name: string;
@@ -47,18 +49,23 @@ const NAMES: string[] = [
   styleUrl: './table.component.scss'
 })
 export class TableComponent implements AfterViewInit{
-  displayedColumns: string[] = ['id', 'name', 'progress', 'fruit'];
-  dataSource: MatTableDataSource<UserData>;
+  displayedColumns: string[] = ['id', 'productName', 'category', 'condition', 'price', 'comment', 'date'];
+  dataSource: MatTableDataSource<ProductRespone>;
 
   @ViewChild(MatPaginator) paginator!: MatPaginator;
   @ViewChild(MatSort) sort!: MatSort;
+  products!: ProductRespone[];
 
-  constructor() {
+  constructor(private productService: ProductService) {
     // Create 100 users
-    const users = Array.from({length: 100}, (_, k) => createNewUser(k + 1));
+    // const users = Array.from({length: 100}, (_, k) => createNewUser(k + 1));
 
+    this.productService.getProducts().subscribe((data) => {
+      this.products = data;
+      console.log(this.products);
+    });
     // Assign the data to the data source for the table to render
-    this.dataSource = new MatTableDataSource(users);
+    this.dataSource = new MatTableDataSource(this.products);
   }
 
   ngAfterViewInit() {
@@ -76,18 +83,3 @@ export class TableComponent implements AfterViewInit{
   }
 }
 
-/** Builds and returns a new User. */
-function createNewUser(id: number): UserData {
-  const name =
-    NAMES[Math.round(Math.random() * (NAMES.length - 1))] +
-    ' ' +
-    NAMES[Math.round(Math.random() * (NAMES.length - 1))].charAt(0) +
-    '.';
-
-  return {
-    id: id.toString(),
-    name: name,
-    progress: Math.round(Math.random() * 100).toString(),
-    fruit: FRUITS[Math.round(Math.random() * (FRUITS.length - 1))],
-  };
-}
