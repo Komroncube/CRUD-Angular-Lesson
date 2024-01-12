@@ -8,5 +8,8 @@ table {
   }
   
   td, th {
-    width: 25%;
+    width: 14%;
+  }
+  td, th :first-child {
+    width: 5%;
   }
